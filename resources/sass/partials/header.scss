@@ -1,0 +1,9 @@
+header{
+    height: 100px;
+    background-color: blue;
+
+    & a{
+        color: white;
+        text-decoration: none;
+    }
+}

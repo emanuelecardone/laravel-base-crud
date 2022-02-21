@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Comic;
 
 class ComicController extends Controller
 {
@@ -13,7 +14,8 @@ class ComicController extends Controller
      */
     public function index()
     {
-        //
+        $comics = Comic::all();
+        return view('comics.index', compact('comics'));
     }
 
     /**
@@ -24,6 +26,8 @@ class ComicController extends Controller
     public function create()
     {
         //
+        $comics = Comic::all();
+        return view('comics.create', compact('comics'));
     }
 
     /**
@@ -35,6 +39,15 @@ class ComicController extends Controller
     public function store(Request $request)
     {
         //
+        $form_data = $request->all();
+
+        $request->validate($this->getValidationRules());
+
+        $new_comic = new Comic();
+        $new_comic->fill($form_data);
+        $new_comic->save();
+
+        return redirect()->route('comics.show', ['comic' => $new_comic->id]);
     }
 
     /**
@@ -46,6 +59,8 @@ class ComicController extends Controller
     public function show($id)
     {
         //
+        $comic = Comic::findOrFail($id);
+        return view('comics.show', compact('comic'));
     }
 
     /**
@@ -57,6 +72,9 @@ class ComicController extends Controller
     public function edit($id)
     {
         //
+        $comic = Comic::findOrFail($id);
+
+        return view('comics.edit', compact('comic'));
     }
 
     /**
@@ -69,6 +87,14 @@ class ComicController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $form_data = $request->all();
+
+        $request->validate($this->getValidationRules());
+        
+        $comic_to_update = Comic::findOrFail($id);
+        $comic_to_update->update($form_data);
+
+        return redirect()->route('comics.show', ['comic' => $comic_to_update->id]);
     }
 
     /**
@@ -80,5 +106,21 @@ class ComicController extends Controller
     public function destroy($id)
     {
         //
+        $comic_to_delete = Comic::findOrFail($id);
+        $comic_to_delete->delete();
+
+        return redirect()->route('comics.index');
+    }
+
+    protected function getValidationRules() {
+        return [
+            'title' => 'required|max:50',
+            'description' => 'min:10|max:60000|nullable',
+            'thumb' => 'required|max:255',
+            'price' => 'required',
+            'series' => 'required|max:100',
+            'sale_date' => 'nullable',
+            'type' => 'max:50|nullable'
+        ];
     }
 }

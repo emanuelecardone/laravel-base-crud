@@ -1,0 +1,9 @@
+main{
+    padding: 1rem;
+    min-height: calc(100vh - 200px);
+    background-color: lightblue;
+
+    & a{
+        font-weight: bold;
+    }
+}
